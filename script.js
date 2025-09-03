@@ -1,10 +1,4 @@
-// script.js for Kamzy Outfits
-import { 
-  getCart, 
-  saveCart, 
-  addToCart, 
-  updateCartCountSafe 
-} from "./cart.js";
+import { updateCartCountSafe } from "./cart.js";
 
 // 🔄 Load shared header and footer
 document.addEventListener("DOMContentLoaded", () => {
@@ -28,34 +22,49 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("Error loading footer:", err));
 });
 
-// 🧭 Setup nav toggle (fullscreen dropdown)
+// 🧭 Setup nav toggle - FULL SCREEN MOBILE MENU
 function setupNavFunctionality() {
-  const menuToggle = document.querySelector(".menu-toggle");
+  const menuIcon = document.querySelector(".bx-menu");
   const navLinks = document.querySelector(".nav-links");
-  const menuIcon = menuToggle ? menuToggle.querySelector("i") : null;
-
-  if (menuToggle && navLinks && menuIcon) {
-    // Toggle menu open/close
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("active");
-      document.body.classList.toggle("menu-open"); // lock/unlock scroll
-
-      if (navLinks.classList.contains("active")) {
-        menuIcon.classList.replace("bx-menu", "bx-x"); // change to close icon
-      } else {
-        menuIcon.classList.replace("bx-x", "bx-menu"); // back to hamburger
-      }
+  const header = document.querySelector("header");
+  
+  if (menuIcon && navLinks) {
+    // Create close icon
+    const closeIcon = document.createElement("i");
+    closeIcon.className = "bx bx-x close-menu";
+    closeIcon.style.display = "none";
+    closeIcon.style.position = "fixed";
+    closeIcon.style.top = "25px";
+    closeIcon.style.left = "25px";
+    closeIcon.style.fontSize = "32px";
+    closeIcon.style.color = "#fff";
+    closeIcon.style.zIndex = "10002";
+    closeIcon.style.cursor = "pointer";
+    
+    document.body.appendChild(closeIcon);
+    
+    menuIcon.addEventListener("click", () => {
+      navLinks.classList.add("active");
+      document.body.style.overflow = "hidden"; // Prevent scrolling
+      closeIcon.style.display = "block";
+      menuIcon.style.display = "none";
     });
-
-    // Auto-close when a link is clicked
+    
+    closeIcon.addEventListener("click", () => {
+      navLinks.classList.remove("active");
+      document.body.style.overflow = ""; // Enable scrolling
+      closeIcon.style.display = "none";
+      menuIcon.style.display = "block";
+    });
+    
+    // Close menu when clicking on nav links
     const links = navLinks.querySelectorAll("a");
     links.forEach(link => {
       link.addEventListener("click", () => {
-        if (navLinks.classList.contains("active")) {
-          navLinks.classList.remove("active");
-          document.body.classList.remove("menu-open"); // unlock scroll
-          menuIcon.classList.replace("bx-x", "bx-menu"); // reset icon
-        }
+        navLinks.classList.remove("active");
+        document.body.style.overflow = "";
+        closeIcon.style.display = "none";
+        menuIcon.style.display = "block";
       });
     });
   }
@@ -92,7 +101,7 @@ function highlightActivePage() {
   });
 }
 
-// 🛒 Global addToCart function for HTML onclick attributes
+// Global addToCart function for HTML onclick attributes
 window.addToCart = function (id, name, price, imageUrl, buttonElement) {
   const product = { 
     id, 
@@ -119,3 +128,17 @@ window.addToCart = function (id, name, price, imageUrl, buttonElement) {
 
 // Run on page load
 document.addEventListener("DOMContentLoaded", updateCartCountSafe);
+
+// Update copyright year in footer
+function updateCopyrightYear() {
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+}
+
+// Call this function when the footer loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Your existing code...
+    updateCopyrightYear();
+});
